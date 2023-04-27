@@ -1,5 +1,5 @@
 module.exports = {
-  title: '网站标题',
+  title: '小鹏村-笔记',
   description: '网站描述',
   // 注入到当前页面的 HTML <head> 中的标签
   head: [
@@ -11,15 +11,14 @@ module.exports = {
   },
   themeConfig: {
     nav: [
-      { text: '指南', link: '/foo/' },
-      {
-        text: '测试下拉框',
-        items: [
-          { text: '测试菜单项一', link: '/foo/' },
-          { text: '测试菜单项二', link: '/foo/' },
-          { text: '测试菜单项三', link: '/foo/' }
-        ]
-      }
+      // {
+      //   text: '测试下拉框',
+      //   items: [
+      //     { text: '测试菜单项一', link: '/foo/' },
+      //     { text: '测试菜单项二', link: '/foo/' },
+      //     { text: '测试菜单项三', link: '/foo/' }
+      //   ]
+      // }
     ],
     sidebar: [
       {
