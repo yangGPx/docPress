@@ -11,7 +11,7 @@ hero:
   actions:
   - theme: brand
     text: 开始
-    link: /foo/index.md
+    link: /webpack/webpack总结
 
 features:
 - title: 学习笔记
