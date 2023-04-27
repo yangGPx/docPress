@@ -176,13 +176,9 @@ depRelation: {
 
 ## 打包器 bundler  bundle打包
 
-
-
-浏览器不支持直接运行带有import 和 export关键字的代码，报 Uncaught SyntaxError: Cannot use import statement outside a module 错误。** 
-
-现代浏览器可以通过 <script type="module"> 来支持import export ，但IE 8 - 15不支持import export。
-
-```
+``` html
+1. 浏览器不支持直接运行带有 import 和 export 关键字的代码，报 Uncaught SyntaxError: Cannot use import statement outside a module 错误。
+2. 现代浏览器可以通过 <script type="module"></script> 来支持import export ，但IE 8 - 15不支持import export。
 <script type="module" scr="index.js"></script>
 ```
 
@@ -542,7 +538,7 @@ cli.run()
 
 4. 读取index.js 并分析和收集依赖在哪个阶段
 
-   ```ks
+   ```js
    webpack只是一个架子，主要是创建了各种插件
    
    EntryPlugin
