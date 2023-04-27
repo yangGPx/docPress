@@ -22,18 +22,15 @@ module.exports = {
     ],
     sidebar: [
       {
-        text: '指南第一页',
+        text: 'Webpack',
         items: [
-          { text: 'Bar Index', link: '/foo/' },
-          { text: 'Bar One', link: '/foo/one' },
-          { text: 'Bar Two', link: '/foo/two' },
+          { text: 'webpack总结', link: '/webpack/webpack总结' },
         ]
       },
       {
-        text: '指南第二页',
+        text: 'React',
         items: [
-          { text: 'Bar Three', link: '/bar/three' },
-          { text: 'Bar Four', link: '/bar/four' },
+          { text: 'React入门总结', link: '/react/React-note' },
         ]
       },
     ]

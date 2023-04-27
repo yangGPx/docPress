@@ -1,3 +1,0 @@
-## Bar Three
-
-Bar Three

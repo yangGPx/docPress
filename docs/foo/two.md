@@ -1,2 +1,0 @@
-# Foo Two
-Foo Two
