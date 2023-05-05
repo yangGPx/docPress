@@ -33,6 +33,12 @@ module.exports = {
           { text: 'React入门总结', link: '/react/React-note' },
         ]
       },
+      {
+        text: 'CSS',
+        items: [
+          { text: 'Css常用样式', link: '/css/常用样式' },
+        ]
+      },
     ]
 
   }
