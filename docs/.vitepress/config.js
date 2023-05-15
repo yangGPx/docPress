@@ -39,6 +39,18 @@ module.exports = {
           { text: 'Css常用样式', link: '/css/常用样式' },
         ]
       },
+      {
+        text: 'VUE',
+        items: [
+          { text: 'vue3使用语法记录', link: '/vue/vue3使用语法记录' },
+        ]
+      },
+      {
+        text: '其他',
+        items: [
+          { text: '藏海', link: '/other/藏海' },
+        ]
+      },
     ]
 
   }
