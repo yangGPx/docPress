@@ -43,6 +43,7 @@ module.exports = {
         text: 'VUE',
         items: [
           { text: 'vue3使用语法记录', link: '/vue/vue3使用语法记录' },
+          { text: 'Pinia基本使用', link: '/vue/pinia基本使用' },
         ]
       },
       {
