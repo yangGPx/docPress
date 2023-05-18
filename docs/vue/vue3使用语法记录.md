@@ -139,6 +139,34 @@
            }
        }
    })
+   
+   import { useStore } from 'xxx'
+   
+   const useData = useStore()
+   1. useData.count++
+   2. useData.$patch({ count: useData.count++ })
+   3. useData.increment()
    ```
 
-   
+8. reactive 由于vue3的实现响应式的原理，解构取值之后的值，不再能够进行监听。所以需要解构取值的话：
+
+    ```js
+    如果是store 则用
+    import { storeToRef } from 'pinia'
+    const { name, count } = storeToRef(store)
+    
+    如果就是vue文件里面的reactive 则用 toRef 、 toRefs
+    const data = reactive({
+        name: 'sheepGP',
+        age: 27
+    })
+    // 这样虽然能拿到 name / age，但是会变成普通变量，没有响应式效果了
+    const { name, age } = data
+    // 取出来一个响应式属性
+    const name = toRef(data, 'name')
+    // 这样解构出来的所有属性都是有响应式的
+    const { name, age } = toRefs(data)
+    
+    ```
+
+    
