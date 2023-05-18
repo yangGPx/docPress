@@ -8,9 +8,10 @@
 2. 去掉了mutation；
 3. 可以直接对state进行修改。
 
-## 基本使用 基于<script setup>
+## 基本使用
+ [介绍 | Pinia 中文文档 (web3doc.top)](https://pinia.web3doc.top/introduction.html#基本示例)  看基本示例 
 
- [介绍 | Pinia 中文文档 (web3doc.top)](https://pinia.web3doc.top/introduction.html#基本示例)  看基本示例
+基于 `script setup`
 
 ### defineStore 创建一个store
 
