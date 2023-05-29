@@ -1,0 +1,1 @@
+import{_ as s,c as n,o as a,a as l}from"./app.3718f187.js";const A=JSON.parse('{"title":"vue3使用记录","description":"","frontmatter":{},"headers":[],"relativePath":"vue/vue3使用语法记录.md"}'),p={name:"vue/vue3使用语法记录.md"},o=l("",4),e=[o];function c(r,t,D,y,F,i){return a(),n("div",null,e)}const u=s(p,[["render",c]]);export{A as __pageData,u as default};
