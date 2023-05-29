@@ -300,3 +300,98 @@ babel永远不要自己写，而是找文档复制
 
 
 
+## Webpack  优化 optimizatitor
+
+webpack优化之单独打包
+
+1. 单独打包runtime
+
+   ```js
+   optimizatitor: {
+       runtimeChunk: 'single' // runtime文件单独打包
+   }
+   ```
+
+   runtime文件，main文件运行时需要额外的代码进行支持。比如main的代码 在IE方面需要运行，
+
+   如果不单独打包， 。。。。缓存失效	
+
+2. Webpack 优化 用splitChunks 将node依赖单独打包， 把一些工具插件（vue、react） 抽取出来，因为这些函数基本不变，可以利用缓存机制，每次打包不用变
+
+   ```js
+   splitChunks: {
+         cacheGroups: {
+           vendor: {
+             minSize: 0, /* 如果不写 0，由于 React 文件尺寸太小，会直接跳过 */
+             test: /[\\/]node_modules[\\/]/, // 为了匹配 /node_modules/ 或 \node_modules\
+             name: 'vendors', // 文件名
+             chunks: 'all',  // all 表示同步加载和异步加载，async 表示异步加载，initial 表示同步加载
+             // 这三行的整体意思就是把两种加载方式的来自 node_modules 目录的文件打包为 vendors.xxx.js
+             // 其中 vendors 是第三方的意思
+           },
+         },
+       },
+   ```
+
+3. 利用 moduleIds 固定 打包的module的id
+
+   比如打包的不变的文件丢了，前后的顺序就会变，那就得重新进行打包，可以利用这个属性，将文件打包出来的id固定住，如果该打包文件一直不变，这个id是跟随文件的。（还需要再查查）
+
+   ```js
+   就一句话
+   moduleIds: "deterministic"
+   ```
+
+4. 多页面， 几个入口 对应 几个html
+
+   主要是添加入口 和 入口对应生成的html
+
+   ```js
+   entry: {
+       main: './src/main.js',
+       admin: './src/admin.js'
+   },
+   plugins: [
+       new HtmlWebpackPlugin({ // 这个是里面的filename 以及 chunks里面的值是默认的
+           filename: 'index.html',
+           chunks: ['main']
+       }),
+       new HtmlWebpackPlugin({
+           filename: 'admin.html',
+           chunks: ['admin'] // 主要是和上面的entry的模块要对应
+       })
+   ]
+   ```
+
+5. 多页面， common 优化
+
+   两个页面，同样引入了一个文件，很大，但他们分别打包了两份，这样不合理，应该共用同一个文件，common。把一些多个页面共用到的比较大的文件进行打包封装成一个文件，然后分别引用
+
+   ```js
+   splitChunks: {
+       common: {
+            priority: 5,
+            minSize: 0,
+            minChunks: 2,
+            chunks: 'all',
+            name: 'common'
+          }
+   }
+   ```
+
+   #### code split 代码分割
+
+   runtime -
+
+   node_modules   vendors
+
+   commom 将两个文件共用的代码放入common.js 
+
+   self(mian/ index)
+
+6. 支持无限多页面，不算是webpack的知识了，而是js + node.js 的知识
+
+   思路： 创建page目录。根据pages的js，一个js生成一个html,利用nodejs的能力，读取文件夹，根据文件加了里面的js生成, 在webpack.config.js 中 生成添加对应的配置， entry 以及 HtmlWebpackPlugin
+
+
+

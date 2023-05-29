@@ -25,12 +25,20 @@ module.exports = {
         text: 'Webpack',
         items: [
           { text: 'webpack总结', link: '/webpack/webpack总结' },
+          { text: 'webpack配置总结', link: '/webpack/webpack配置总结' },
         ]
       },
       {
         text: 'React',
         items: [
           { text: 'React入门总结', link: '/react/React-note' },
+        ]
+      },
+      {
+        text: 'JavaScript',
+        items: [
+          { text: '防抖、节流', link: '/JavaScript/防抖-节流' },
+          { text: '项目中常用的工具函数总结', link: '/JavaScript/项目中常用的工具函数总结' },
         ]
       },
       {
