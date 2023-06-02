@@ -2,7 +2,7 @@
 
 ## 基础知识
 
-1. node_modules的**.bin**目录是做啥的？
+#### node_modules的**.bin**目录是做啥的？
 
 > #### Executables
 >
@@ -10,7 +10,7 @@
 >
 > When in local mode, executables are linked into `./node_modules/.bin` so that they can be made available to scripts run through npm. (For example, so that a test runner will be in the path when you run `npm test`.)
 
-如果直接在命令行中使用webpack-cli，得
+如果直接在命令行中使用webpack-cli，可以
 
 ```js
 node_modules/.bin/webpack
@@ -20,9 +20,9 @@ npx webpack
 npx 会在当前目录下的./node_modules/.bin里去查找是否有可执行的命令，没有找到的话再从全局里查找是否有安装对应的模块，全局也没有的话就会自动下载对应的模块，如上面的 create-react-app，npx 会将 create-react-app 下载到一个临时目录，用完即删，不会占用本地资源。
 ```
 
-而在package.json中scripts可以直接写 webpack, 这就是.bin的作用。
+而在package.json中scripts可以直接写 webpack, 这就是**.bin目录**的作用。
 
-babel官网 [@babel/parser模块](https://www.babeljs.cn/docs/babel-parser) 也是很大程度上依赖了[acorn](https://github.com/acornjs/acorn)
+babel官网 [@babel/parser模块](https://www.babeljs.cn/docs/babel-parser) 也是很大程度上依赖了[acorn](https://github.com/acornjs/acorn)，下面为babel官网
 
 >  Heavily based on [acorn](https://github.com/marijnh/acorn) and [acorn-jsx](https://github.com/RReverser/acorn-jsx) 
 
@@ -30,7 +30,7 @@ babel官网 [@babel/parser模块](https://www.babeljs.cn/docs/babel-parser) 也�
 
 ```
 1. yarn add webpack webpack-cli
-2. Common-Line 
+2. 命令行窗口 
 ./node_modules/.bin/webpack-cli --mode=development ./project_1/index.js
 ```
 
@@ -38,14 +38,14 @@ babel官网 [@babel/parser模块](https://www.babeljs.cn/docs/babel-parser) 也�
 
 实现目标：
 
-1. 转译，将一些不兼容的js语法转译为兼容性更好的语法，比如 import/export 转译为 require/module.exports ，ESModule 转为 CommonJs的语法；
-2. 打包， 将多个文件打包成一个文件。
+1. **转译**，将一些不兼容的js语法转译为兼容性更好的语法，比如 import/export 转译为 require/module.exports ，ESModule 转为 CommonJs的语法；
+2. **打包**， 将多个文件打包成一个文件。
 
-过程： code -> es5Code -> AST->  code2
+**过程**： code -> es5Code -> AST->  code2
 
-利用babel一些模块，实现各个过程，在将code转为AST后, 收集文件的依赖，以及文件的es5Code，并在收集过程中，处理循环依赖这种情况（记住收集过的依赖，收集过的就不再收集）。
+**文字解释**：利用**babel**一些模块以及**Node**的一些模块，实现各个过程。读取文件，在将code转为AST后, 收集文件的依赖，以及文件的es5Code，并在收集过程中，处理循环依赖这种情况（记录收集过的依赖，收集过的就不再收集）。
 
-注意：打包器 和 打包器最后输出的文件是两个东西。
+注意：**打包器** 和 **打包器最后输出文件**是两个东西。
 
 前提： 读写文件利用了nodeJs的fs,path,
 
@@ -293,113 +293,147 @@ function execute(key) {} //  根据key，在depRelation中找到对应项，执�
 
 
 
+### webpack 装逼指南
+
+1. 阅读了webpack 源码
+2. webpack 使用 Tapable 作为事件中心，将打包分为 env,compile,make sewal,emit等阶段
+3. 在make阶段借助acorn对源码进行了parse
+
 
 
 ## Loader  和 Plugin
 
 ### Loader
 
+官网解释：
 
+>  webpack 只能理解 JavaScript 和 JSON 文件，这是 webpack 开箱可用的自带能力。**loader** 让 webpack 能够去处理其他类型的文件，并将它们转换为有效 [模块](https://webpack.docschina.org/concepts/modules)，以供应用程序使用，以及被添加到依赖图中。 
+
+比如不能识别CSS文件，所以需要引用Css-loader。主要集中在编译阶段。
+
+#### 自己实现一个CSS-Loader。
+
+**关键点**： 把css转为js。js文件中转，css文件代码转为字符串，然后在写入的时候，用dom操作，添加到html文件中。
+
+**注意**：css中会有属性选择器，会有双引号，如果直接用`"${code}"`反引号+双引号进行包裹的话，最后写的文件会出问题，所以用**`${JSON.stringify(code)}`**,JSON.stringify会对双引号进行转义。
+
+```js
+if(/\.css$/.test(path)) {
+    code = `const str = ${JSON.stringify(code)}
+		if(document) {
+			const style = document.createElement('style')
+			style.innerHTML = str
+			document.head.appendChild(style)
+}
+export default str
+	`
+}
+```
+
+loader可以是一个函数，
+
+css-loader 就是把上面的代码单独封装在一个文件里面，导出方法
+
+```js
+css-loader.js
+const transform = code => `
+	const str = ${JSON.stringify(code)}
+	if(document) {
+const style = document.createElement('style')
+style.innerHTML = str
+document.head.appendChild(style)
+}
+export default str
+`
+
+module.exports = transform
+
+
+bundler.ts
+if(/\.css$/.test(path)) {
+  code = require('./css-loader.js')(code)   
+}
+
+```
+
+ #### 单一职责原则
+
+webpack里每个loader只做一件事，方便组合。
+
+而上面的代码**做了两件事**，**第一是css->js**， **第二是添加到head里面**。拆分为css-loader、style-loader。但我们无法实现style-loader，因为**style-loader是插入代码**，需要寻找插入时机和插入位置。
+
+如果是sassLoader,lessLoader -> cssLoader 这样过程一直是转译，但style-loader是接收到css-loader transform后的代码，并添加插入逻辑。 
+
+拆分后的代码
+
+```js
+css-loader 
+const tranform = (code) => `
+	const str = ${JSON.stringify(code)}
+	export default str
+` 
+module.exports = transform
+
+stule-loader
+const tranform = (code) => `
+${code}
+	if(document) {
+const style = document.createElement('style')
+style.innerHTML = ${JSON.stringify(code)}
+document.head.appendChild(style)
+}
+` 
+module.exports = transform
+
+code = require('./css-loader.js')(code)
+code = require('./style-loader.js')(code)
+但这样的话，最后打包输出的结果
+
+const str = "const str = \"body{color: red}\"\"
+...
+style.innerHTML = "const str = \"body{color: red}\"..."
+输出的了多余的代码，这样就会有问题
+```
 
 ### Plugin
 
+官网解释
+
+>  loader 用于转换某些类型的模块，而插件则可以用于执行范围更广的任务。包括：打包优化，资源管理，注入环境变量。 
+
+在某两个阶段中间插入进去,考虑在哪个阶段执行，全局阶段基本都可以。
+
+### imagemin-webpack-plugin
+
+1. 使用
+2. 源码，监听emit事件，对compilation.assets进行遍历，如果是图片的话，就对图片进行压缩
+
+### clean-webpack-plugin
+
+1. 使用
+2. emit，确定开始编译之前，清除之前的文件
+3. done，删除不需要的临时文件
+
+### providePlugin
+
+全局使用一个变量，不需要引入，直接用就好了，会自动在使用到变量的文件自动引入。
+
+在哪个阶段开始做呢？
+
+该 插件直接监听的是nmf
+
+compilation阶段，获取nmf,  parse之后, 在ast遍历的时候进行处理
 
 
-## webpack高级配置
 
-babel永远不要自己写，而是找文档复制
+### Loader 和 plugin区别 ？
 
-1. package.json , webpack.config.js
+loader主要是在make阶段
 
-   ```js
-   package.json 
-   "scaripts": {
-       "build": "webpack"
-   }
-   
-   webpack.config.js
-   module.exports = {
-       mode: 'development'
-   }
-   ```
+plugin对webpack的每个阶段进行介入，丰富webpack的能力，基于事件机制工作，监听web                                      pack的 打包过程中每个阶段函数
 
-   
+### 自己写webpack plugin
 
-2. babel-loader  打包js, webpack5已经可以了，但babel-loader支持打包ts
+官方文档 write plugin
 
-   ```js
-   preset pre预先 set配置 
-   module: {
-     rules: [
-       {
-         test: /\.jsx?$/,
-         exclude: /(node_modules|bower_components)/,
-         use: {
-           loader: 'babel-loader',
-           options: {
-             presets: ['@babel/preset-env']
-           }
-         }
-       }
-     ]
-   }
-   ```
-
-3. babel-loader 打包jsx, vue/react
-
-   ```js
-   @babel/preset-react
-   
-   jsDemo.jsx
-   export const jsxDemo = () => <div>jsDemo</div>
-   
-   module: {
-     rules: [
-       {
-         test: /\.jsx?$/,
-         exclude: /(node_modules|bower_components)/,
-         use: {
-           loader: 'babel-loader',
-           options: {
-             presets: [
-                 ['@babel/preset-env'],
-                 ['@babel/preset-react']
-             ]
-           }
-         }
-       }
-     ]
-   }
-   没有安装react 也没有提示
-   ```
-
-4. eslint插件 jsx插件要引入React，不引入就报错提示
-
-   ```js
-   支持 eslint，jsx里面必须引入react
-   1. webstorm支持eslint检查
-   2. webpack也支持eslint检查
-   
-   1. 创建 .eslintrx.js 文件， 初始化配置， 开启webstrome 的eslint功能
-   
-   2. webpack 用 EslintPlugin, google webpack 使用eslint
-   在 ["@babel/preset-react", {runtime: 'classic'}]
-   ```
-
-5. babel-loader 打包 ts文件
-
-   ```js
-   改 babel-loader的正则检查
-   
-   加presets @babel/preset-typescript
-   ```
-
-6. ESlint支持TS
-
-   ```
-   为啥不用TSlint, 作者不想维护了，让大家用ESlint
-   
-   .eslintrc.js  单独对ts, tsx制定规则
-   ```
-
-   
+主要是按照官方文档格式，以及考虑需求，要监听什么阶段的事件？，以及要做什么？

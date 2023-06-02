@@ -1,5 +1,18 @@
 # webpack高级配置
 
+## webpack 基本使用
+
+```js
+module.exports = {
+    mode: 'development',
+    entry: './src/main.js',
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'main.[hash].js'
+    }
+}
+```
+
 ## Webpack高级配置举例（1）
 
 babel永远不要自己写，而是找文档复制
@@ -14,13 +27,33 @@ babel永远不要自己写，而是找文档复制
    
    webpack.config.js
    module.exports = {
-       mode: 'development'
+       mode: 'development',
+       entry: './src/main.js',
+       output: {
+           path: path.resolve(__dirname, 'dist'),
+           filename: 'main.[hash:8].js'
+       }
    }
    ```
 
-   
+2. 支持IE
 
-2. **babel-loader**  打包js, webpack5也可以直接编译发包Js了，但babel-loader支持打包ts
+   ```js
+   .browserlistrc
+   
+   [production]
+   > 1%
+   ie 9
+   
+   [modern]
+   last 1 chrome version
+   last 1 firefox version
+   
+   [ssr]
+   node 12
+   ```
+
+3. **babel-loader**  打包js, webpack5也可以直接编译发包Js了，但**babel-loader支持打包ts**
 
    ```js
    preset pre预先 set配置 
@@ -40,7 +73,7 @@ babel永远不要自己写，而是找文档复制
    }
    ```
 
-3. babel-loader 打包jsx, vue/react
+4. babel-loader 打包**jsx**, 引入 `@babel/preset-react` 支持 jsx文件
 
    ```js
    @babel/preset-react
@@ -65,56 +98,73 @@ babel永远不要自己写，而是找文档复制
        }
      ]
    }
-   没有安装react 也没有提示
+   但存在一个问题: 没有安装react 也没有提示
    ```
 
-4. eslint插件 jsx插件要引入React，不引入就报错提示
+5. 引入**Eslint**, jsx文件要引入React，不引入就报错提示
 
    ```js
    支持 eslint，jsx里面必须引入react
    1. webstorm支持eslint检查
    2. webpack也支持eslint检查
    
-   1. 创建 .eslintrx.js 文件， 初始化配置， 开启webstrome 的eslint功能
+   需要下载的：
+   eslint eslint-weboack-plugin eslint-plugin-react react react-dom eslint-config-react-app
    
-   2. webpack 用 EslintPlugin, google webpack 使用eslint
+   步骤：
+   1. 创建 .eslintrx.js 文件， 初始化配置， 开启webstrome 的eslint功能
+   module.exports = {
+       extends: ['react-app'],
+       rules: {
+           'react/jsx-uses-react': [2],
+           'react/react-in-jsx-scope': [2]
+       }
+   }
+   2. webpack 用 EslintPlugin, (google webpack 使用eslint)
    在 ["@babel/preset-react", {runtime: 'classic'}]
+   plugins: [
+       new EslintPlugin({
+           extensions: ['.js', '.jsx']
+       })
+   ]
    ```
 
-5. babel-loader 打包 ts文件
+6. babel-loader 打包 ts文件
 
    ```js
-   改 babel-loader的正则检查
+   增加 babel-loader 的test 正则检查范围
    
-   加presets @babel/preset-typescript
+   在presets中新增 @babel/preset-typescript，扩展对typeScript的编译
    ```
 
-6. ESlint 支持 TS 
+7. ESlint 支持 TS 
 
    代码地址： https://github.com/FrankFang/jprcb00x6ZsV/blob/master/.eslintrc.js
-   
+
    ```
    为啥不用TSlint, 作者不想维护了，让大家用ESlint
-   
-.eslintrc.js  单独对ts, tsx制定规则
-   overrides 单独对ts tsx制定规则，主要使用airbnb-typescript ，然后自己写一下小rule进行覆盖
-   project 必须写，估计是为了告诉去哪里找入口，
    ```
-   
-7. babel-loader 打包 TSX tsx: ts支持div
 
-   ```js
-   demo.tsx
+8. `.eslintrc.js`  单独对ts, tsx制定规则
+
+`overrides`  单独对ts tsx制定规则，主要使用`airbnb-typescript` ，然后自己写一下小rule进行覆盖
+
+project 必须写，估计是为了告诉去哪里找入口，
+
+   ```
+babel-loader 打包 TSX tsx: ts支持div
+测试文件：demo.tsx
    
    import React from 'react'
    const TsxDemo = () => (<div>Tsx Demo</div>)
    
-   npx tsc --init // 生成tsconfig.json
+   
+   npx tsc --init   	// 生成tsconfig.json
                           
-   jsx: "preserve"  // 打开并改为 react
-                          
-   strict: false  // 严格模式，对新手不好
-   noImplicitAny: true  // 打开，并支持
+tsconfig.json 的修改配置                          
+   jsx: "preserve"  	// 打开并改为 react                          
+   strict: false    	// 严格模式，对新手不好
+   noImplicitAny: true  // 打开，并支持  静止any类型
    ```
 
    **CRLF**  回车换行， 回车（车床）是老式打字机，打满一行，然后需要把打字位置回到最左边。换行就是的换下一行进行打字。回车有一个符号进行表示。
@@ -302,21 +352,31 @@ babel永远不要自己写，而是找文档复制
 
 ## Webpack  优化 optimizatitor
 
+webpack官网优化章节：  https://webpack.docschina.org/configuration/optimization/
+
 webpack优化之单独打包
 
-1. 单独打包runtime
+1. 单独打包**runtimeChunk**
 
    ```js
    optimizatitor: {
        runtimeChunk: 'single' // runtime文件单独打包
    }
+   为什么这样做的参考文章： 
+   https://www.jianshu.com/p/714ce38b9fdc
+   官方文档： 
+   https://webpack.docschina.org/configuration/optimization/#optimizationruntimechunk
+   
+   总结： 主要是把包含chunks映射关系的list单独从app.js中抽取出来，这样改非app.js的入口文件的代码，并不会去重新打包app.js的代码，所以app.js的id也不会变，这样就可以利用缓存机制。系统上线新代码之后，用户缓存的app.js不会重新加载。
+   
+   把一些运行用到的代码提取出来，比如chunks的映射关系。这样可以重新打包代码后，app.js的id依旧是之前的，用户端请求的时候，可以缓存住。
    ```
 
    runtime文件，main文件运行时需要额外的代码进行支持。比如main的代码 在IE方面需要运行，
 
    如果不单独打包， 。。。。缓存失效	
 
-2. Webpack 优化 用splitChunks 将node依赖单独打包， 把一些工具插件（vue、react） 抽取出来，因为这些函数基本不变，可以利用缓存机制，每次打包不用变
+2. **splitChunks** 将node依赖单独打包， 把一些工具插件（vue、react） 抽取出来，因为这些函数基本不变，可以利用缓存机制，每次打包不用变
 
    ```js
    splitChunks: {
@@ -333,13 +393,19 @@ webpack优化之单独打包
        },
    ```
 
-3. 利用 moduleIds 固定 打包的module的id
+3. 利用 **moduleIds** 固定 打包的module的id
 
-   比如打包的不变的文件丢了，前后的顺序就会变，那就得重新进行打包，可以利用这个属性，将文件打包出来的id固定住，如果该打包文件一直不变，这个id是跟随文件的。（还需要再查查）
+   要和之前的做对比，之前用 natural 这类按照顺序来命名的文件，本来顺序是1 2 3，如果中间2的相关代码删掉了，3就变成了2,这样的话就无法缓存住3了。
+
+   而 deterministic  ，根据文件名称生成短 hash 。这样的话1、3打包出来依旧是可以从缓存中读取的。
+
+   比如某个模块的删除了，前后的顺序就会变，那就得重新进行打包，可以利用这个属性`deterministic`，将文件id使用名字生成的短哈希。打包出来的id固定住，如果该打包文件一直不变，这个id是跟随文件的。（还需要再查查 todo）
 
    ```js
    就一句话
-   moduleIds: "deterministic"
+   moduleIds: "deterministic"  webapck5加上的
+   
+   参考文章： https://blog.csdn.net/qq_17175013/article/details/119769033
    ```
 
 4. 多页面， 几个入口 对应 几个html
@@ -389,9 +455,9 @@ webpack优化之单独打包
 
    self(mian/ index)
 
-6. 支持无限多页面，不算是webpack的知识了，而是js + node.js 的知识
+6. **支持无限多页面**，不算是webpack的知识了，而是js + node.js 的知识
 
-   思路： 创建page目录。根据pages的js，一个js生成一个html,利用nodejs的能力，读取文件夹，根据文件加了里面的js生成, 在webpack.config.js 中 生成添加对应的配置， entry 以及 HtmlWebpackPlugin
+   **思路**： 创建page目录。根据pages的js，一个js生成一个html,利用nodejs的能力，读取文件夹，根据文件加了里面的js生成, 在webpack.config.js 中 生成添加对应的配置， entry 以及 HtmlWebpackPlugin
 
 
 
