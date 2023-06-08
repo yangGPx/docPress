@@ -904,6 +904,8 @@ addEventListener('click', fn, T/F)
 
 #### 手写事件委托
 
+不是每个子节点单独设置事件监听器，而是事件监听器设置在其父节点上，然后利用冒泡原理影响设置每个子节点。
+
 好处：
 
 1. 节省监听器
@@ -919,11 +921,32 @@ addEventListener('click', fn, T/F)
 
 主要是冒泡，点击的具体元素 会 一层一层找到父级元素，然后去检测父级元素 是否符合传入的selector, 符合的话 则执行事件
 
+递归的边界值：一直递归到 父级元素层
+
 ```js
 el.matches(selector) 
 例子：
 <div id="xxxxxx" data-xxx="xxx"></div>
 
 document.querySelector('[data-xxx="xxx"]').matches('#xxxxxx')  => true
+
+function eventEntrust(element, eventType, selector, callback) {
+    if(element && element.nodeType === 3) {
+        element.addEventListener(eventType, (e) => {
+            let el = e.target
+            while(!el.matches(selector)) {
+                if(element === el) {
+                    el = null
+                    break;
+                }
+                el = el.parentNode
+            }
+            
+            el && callback.call(el, e, el)
+        })
+    }
+     return element 
+}
+
 ```
 
