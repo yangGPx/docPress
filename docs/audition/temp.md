@@ -884,7 +884,46 @@ for(let key in a) {
 
 var a1 = [1,2,2,333,4,4,333]
 
-1. 计数排序,用对象去计数 如果里面有对象的话 就用map
+1. 计数排序,用对象去计数 如果里面有对象的话 就用map。用对象存储key的话，key就只能是字符串可。
 2. 用set, Array.from(new Set(a))  [...new Set(a1)]
-3. 
+3. 使用Map存key，这样的话支持的类型多
+
+
+
+
+
+## Dom押题
+
+com事件模型： 先经历从上到下的捕获，再经理从下到上的冒泡阶段
+
+addEventListener('click', fn, T/F)
+
+可以使用e.stopPropagation() 來阻止捕获或冒泡 // 阻止传播的过程
+
+
+
+#### 手写事件委托
+
+好处：
+
+1. 节省监听器
+2. 实现动态监听
+
+还钱：
+
+解决坏处：
+
+
+
+思路： 点击span后，递归遍历span的祖先元素，看其中有没有ul的li
+
+主要是冒泡，点击的具体元素 会 一层一层找到父级元素，然后去检测父级元素 是否符合传入的selector, 符合的话 则执行事件
+
+```js
+el.matches(selector) 
+例子：
+<div id="xxxxxx" data-xxx="xxx"></div>
+
+document.querySelector('[data-xxx="xxx"]').matches('#xxxxxx')  => true
+```
 
