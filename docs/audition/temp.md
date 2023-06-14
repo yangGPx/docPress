@@ -950,3 +950,38 @@ function eventEntrust(element, eventType, selector, callback) {
 
 ```
 
+### 拖拽 div
+
+
+
+
+
+
+
+## Http
+
+##### Get Post 区别有哪些
+
+打开一post页 
+
+1. 幂等性
+
+   get是读，post是写， get读100次，数据也是一样的，而post每提交一次，数据库的值就可以改变。所以get是幂等，post不是
+
+   get是读，post是写 所以用浏览器打开页面发送Get请求，post打开页面提交表单
+
+   get页面可以被手签收藏，post页面不行，为了安全。
+   
+3. 请求参数
+
+   通常，Get请求参数放在url里， post请求放在body里
+
+   Get请求参数放在url里 是有长度限制，  不是协议限制的，而是软件和服务器限制的
+   
+3. TCP packet
+
+5. get只发一个，post两个或两个以上，因为有请求体。
+   
+   **最根本区别就是语义的区别。**
+
+****
