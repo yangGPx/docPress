@@ -93,7 +93,7 @@ onPullDownRefresh 用户下拉刷新之后触发
 ```js
 应用生命周期，只在App.vue中才能使用
 onPageNotFound() { // 找不到的生命周期
-	uni.navigateTp({
+	uni.navigateTo({
         url: '/pages/404/404' // 路由都要在pages.json 中注册
     })
 }
@@ -342,7 +342,76 @@ export default const store = new Vuex.store({
 
 
 
+# UniAPP 社区论坛项目
 
+基于ThinkSNS 
+
+php + mysql 技术， 核心 + 多应用 + 多插件的产品模式
+
+gitee thinksns
+
+
+
+### 项目初始化  ok
+
+1. 新建uniapp项目，并创建feeds + me页面
+2. 配置tabBar
+3. 通过npm 引入 uview-ui
+4. uview-ui在main中使用，并引入主题文件、样式文件
+5. uview-ui 按需引入
+
+
+
+### 首页的实现 ok
+
+1. 分析首页，整个结构
+2. swiper 首页轮播图
+3. 首页顶部并没有标题： navigationStyle: 'custom'
+4. 点击进行跳转一个外部页面，是开一个webView ，
+5. 当url作为参数的时候是，要用encodeURL 对url进行编码，以及decodeURL进行编码。
+
+
+
+### 用接口请求数据
+
+https://v1.uviewui.com/js/http.html
+
+https://v1.uviewui.com/js/apiManage.html
+
+1. 用uview 提供的js进行封装请求
+2. 请求拦截 响应拦截
+3. api封装在一个文件里面
+4. 然后挂载到vue实例上
+5. 然后再页面中进行使用
+
+
+
+### 首页 【推荐、资讯】 平滑切换实现
+
+1. 用轮播器，取消自动切换
+
+2. 然后操作swiper的current值进行操作
+
+3. 注册基础信息到vue原型上
+
+   ```
+   Vue.prototype.BaseUrl = ''
+   ```
+
+
+
+### 瀑布流
+
+1. 用css实现也可以，或者js也行
+
+   ```js
+   cloumn-gap: 10px;
+   column-count: 2;
+   ```
+
+   但删除一个元素之后，要重新绘制，css布局适合静态数据展示的
+
+2. js的话，用uview的u-waterfall
 
 
 
