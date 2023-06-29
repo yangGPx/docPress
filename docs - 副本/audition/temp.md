@@ -76,11 +76,10 @@
 
    1. style 的内联比css的高；
    2. 选择器越具体，其优先级越高；
-
-   2. 相同优先级，出现在后面的，覆盖前面的；
-
-   3. 属性后面加！important的优先级最高。
-
+2. 相同优先级，出现在后面的，覆盖前面的；
+   
+4. 属性后面加**!important**的优先级最高。
+   
 4. 如何清除浮动  实践题，写博客, 但浮动基本可以不用了，现在浏览器都支持 flex
 
    1. .clearfix 
@@ -179,12 +178,10 @@
    函数本体是存在堆里面的，对象存的函数只是存了函数的内存地址。
    ```
 
-   ![1685696034645](C:\Users\杨桂鹏\AppData\Roaming\Typora\typora-user-images\1685696034645.png)
-
    一个难题，不该多想，而是按照转换公式去完成他。应该确定一个通用的
 
    ```js
-   const arr = [function() { console.log(this) }]
+const arr = [function() { console.log(this) }]
    arr[0]()
    等价于
    arr.0()
@@ -192,11 +189,11 @@
    
    this就是arr
    ```
-
+   
    箭头函数没有this
 
    ```js
-   f = () => {
+f = () => {
        console.log(this)
    }
    其实跟
@@ -208,7 +205,7 @@
    外面this是啥，就输出什么。
    箭头函数里面的this就是一个普通变量，和abcd都一样。
    ```
-
+   
 4. **new 做了什么**
 
    mdn官网： https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/new
